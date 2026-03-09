@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>TaskTrack - Student To-Do List</title>
+
+<style>
+body{
+font-family: Arial, sans-serif;
+background:#f4f6f9;
+margin:0;
+padding:0;
+}
+
+header{
+background:#4a6cf7;
+color:white;
+text-align:center;
+padding:20px;
+}
+
+.container{
+width:80%;
+margin:auto;
+margin-top:20px;
+}
+
+input{
+padding:10px;
+width:70%;
+}
+
+button{
+padding:10px;
+background:#4a6cf7;
+color:white;
+border:none;
+cursor:pointer;
+}
+
+button:hover{
+background:#324ed1;
+}
+
+.task{
+background:white;
+padding:10px;
+margin-top:10px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+border-radius:5px;
+}
+
+.completed{
+text-decoration:line-through;
+color:gray;
+}
+
+.report{
+background:white;
+padding:15px;
+margin-top:20px;
+border-radius:5px;
+}
+
+.delete{
+background:red;
+margin-left:5px;
+}
+
+.edit{
+background:orange;
+margin-left:5px;
+}
+</style>
+
+</head>
+
+<body>
+
+<header>
+<h1>TaskTrack</h1>
+<p>Student Task Management System</p>
+</header>
+
+<div class="container">
+
+<input type="text" id="taskInput" placeholder="Enter new task">
+<button onclick="addTask()">Add Task</button>
+
+<div id="taskList"></div>
+
+<div class="report">
+<h3>Task Report</h3>
+<p>Total Tasks: <span id="total">0</span></p>
+<p>Completed Tasks: <span id="completed">0</span></p>
+<p>Pending Tasks: <span id="pending">0</span></p>
+</div>
+
+</div>
+
+<script>
+
+let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+function saveTasks(){
+localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+
+function addTask(){
+
+let input = document.getElementById("taskInput");
+let taskText = input.value;
+
+if(taskText === "") return;
+
+tasks.push({
+text: taskText,
+done:false
+});
+
+input.value="";
+saveTasks();
+displayTasks();
+}
+
+function displayTasks(){
+
+let taskList = document.getElementById("taskList");
+taskList.innerHTML="";
+
+tasks.forEach((task,index)=>{
+
+let div=document.createElement("div");
+div.className="task";
+
+let text=document.createElement("span");
+text.innerText=task.text;
+
+if(task.done){
+text.classList.add("completed");
+}
+
+text.onclick=function(){
+toggleTask(index);
+};
+
+let buttons=document.createElement("div");
+
+let editBtn=document.createElement("button");
+editBtn.innerText="Edit";
+editBtn.className="edit";
+editBtn.onclick=function(){
+editTask(index);
+};
+
+let deleteBtn=document.createElement("button");
+deleteBtn.innerText="Delete";
+deleteBtn.className="delete";
+deleteBtn.onclick=function(){
+deleteTask(index);
+};
+
+buttons.appendChild(editBtn);
+buttons.appendChild(deleteBtn);
+
+div.appendChild(text);
+div.appendChild(buttons);
+
+taskList.appendChild(div);
+
+});
+
+updateReport();
+
+}
+
+function toggleTask(index){
+tasks[index].done=!tasks[index].done;
+saveTasks();
+displayTasks();
+}
+
+function deleteTask(index){
+tasks.splice(index,1);
+saveTasks();
+displayTasks();
+}
+
+function editTask(index){
+
+let newTask = prompt("Edit your task:", tasks[index].text);
+
+if(newTask !== null){
+tasks[index].text = newTask;
+saveTasks();
+displayTasks();
+}
+
+}
+
+function updateReport(){
+
+let total = tasks.length;
+let completed = tasks.filter(task=>task.done).length;
+let pending = total - completed;
+
+document.getElementById("total").innerText=total;
+document.getElementById("completed").innerText=completed;
+document.getElementById("pending").innerText=pending;
+
+}
+
+displayTasks();
+
+</script>
+
+</body>
+</html>
