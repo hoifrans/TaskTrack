@@ -1,7 +1,11 @@
+```html
 <!DOCTYPE html>
 <html>
 <head>
+
 <title>TaskTrack</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 
@@ -10,6 +14,27 @@ margin:0;
 font-family:Trebuchet MS, sans-serif;
 background:#f0f3f8;
 text-align:center;
+transition:.3s;
+}
+
+/* DARK MODE */
+
+body.dark{
+background:#121212;
+color:white;
+}
+
+.dark .box,
+.dark .task,
+.dark .report{
+background:#1e1e1e;
+color:white;
+}
+
+.dark input{
+background:#2a2a2a;
+color:white;
+border:1px solid #444;
 }
 
 /* PAGE SYSTEM */
@@ -86,6 +111,7 @@ padding:10px;
 margin-top:10px;
 display:flex;
 justify-content:space-between;
+align-items:center;
 border-radius:5px;
 box-shadow:0 2px 5px rgba(0,0,0,0.1);
 }
@@ -114,7 +140,7 @@ margin-top:20px;
 border-radius:5px;
 }
 
-/* TUTORIAL SLIDES */
+/* TUTORIAL */
 
 .slide{
 width:100vw;
@@ -155,12 +181,55 @@ justify-content:center;
 gap:20px;
 }
 
+/* RESPONSIVE DESIGN */
+
+@media(max-width:768px){
+
+.header-img{
+width:90%;
+height:140px;
+}
+
+.box{
+width:80%;
+}
+
+.task-section{
+width:90%;
+}
+
+input{
+width:70%;
+}
+
+}
+
+@media(max-width:480px){
+
+button{
+width:100%;
+margin-top:5px;
+}
+
+input{
+width:100%;
+margin-bottom:10px;
+}
+
+.task{
+flex-direction:column;
+align-items:flex-start;
+gap:5px;
+}
+
+}
+
 </style>
 </head>
 
 <body>
 
-<!-- FRONT PAGE -->
+<!-- HOME PAGE -->
 
 <div id="home" class="page active">
 
@@ -176,9 +245,13 @@ gap:20px;
 <button onclick="showTutorial()">Tutorial</button>
 </div>
 
+<div class="box">
+<button onclick="toggleDarkMode()">Toggle Dark Mode</button>
 </div>
 
-<!-- MENU PAGE -->
+</div>
+
+<!-- MENU -->
 
 <div id="menu" class="page">
 
@@ -241,6 +314,8 @@ gap:20px;
 
 <h2>View Tasks</h2>
 
+<input id="searchTask" placeholder="Search task..." onkeyup="searchTasks()">
+
 <div id="taskList" class="task-section"></div>
 
 <div class="report">
@@ -269,37 +344,32 @@ gap:20px;
 
 <div class="slide active">
 <h1>Welcome to TaskTrack</h1>
-<p>This tutorial will show you how to manage your tasks using the system.</p>
+<p>This tutorial will show you how to manage your tasks.</p>
 </div>
 
 <div class="slide">
 <h1>Step 1</h1>
-<p>Click OPEN on the home page to access the task menu.</p>
+<p>Click OPEN on the home page.</p>
 </div>
 
 <div class="slide">
 <h1>Step 2</h1>
-<p>Select ADD TASK to enter new tasks.</p>
+<p>Select ADD TASK to create tasks.</p>
 </div>
 
 <div class="slide">
 <h1>Step 3</h1>
-<p>Select UPDATE TASK to edit or delete tasks.</p>
+<p>Use UPDATE TASK to edit or delete.</p>
 </div>
 
 <div class="slide">
 <h1>Step 4</h1>
-<p>Select VIEW TASK to monitor completed and pending tasks.</p>
+<p>Use VIEW TASK to monitor progress.</p>
 </div>
 
 <div class="slide">
-<h1>Step 5</h1>
-<p>Click SAVE TASKS to export your tasks as a document.</p>
-</div>
-
-<div class="slide">
-<h1>End of Tutorial</h1>
-<p>You can now start organizing your academic tasks.</p>
+<h1>End</h1>
+<p>You are ready to organize your tasks.</p>
 </div>
 
 <div class="nav">
@@ -392,7 +462,45 @@ updateReport()
 
 }
 
-/* UPDATE TASK PAGE */
+/* SEARCH TASK */
+
+function searchTasks(){
+
+let keyword=document.getElementById("searchTask").value.toLowerCase()
+
+let list=document.getElementById("taskList")
+list.innerHTML=""
+
+tasks.forEach((task,i)=>{
+
+if(task.text.toLowerCase().includes(keyword)){
+
+let div=document.createElement("div")
+div.className="task"
+
+let text=document.createElement("span")
+text.innerText=task.text
+
+if(task.done) text.classList.add("completed")
+
+text.onclick=function(){
+
+tasks[i].done=!tasks[i].done
+saveTasks()
+searchTasks()
+
+}
+
+div.appendChild(text)
+list.appendChild(div)
+
+}
+
+})
+
+}
+
+/* UPDATE PAGE */
 
 function displayUpdate(){
 
@@ -461,7 +569,7 @@ document.getElementById("pending").innerText=pending
 
 }
 
-/* EXPORT TASKS */
+/* EXPORT */
 
 function saveTasksToFile(){
 
@@ -471,12 +579,7 @@ return
 }
 
 let name=prompt("Enter file name")
-
 if(!name) return
-
-let format=prompt("Enter format: txt or doc")
-
-if(!format) return
 
 let content="TaskTrack Report\n\n"
 
@@ -492,12 +595,26 @@ let blob=new Blob([content],{type:"text/plain"})
 let link=document.createElement("a")
 
 link.href=URL.createObjectURL(blob)
-link.download=name+"."+format
+link.download=name+".txt"
 
 link.click()
 
-alert("Tasks saved!")
+}
 
+/* DARK MODE */
+
+function toggleDarkMode(){
+
+document.body.classList.toggle("dark")
+
+let mode=document.body.classList.contains("dark")
+
+localStorage.setItem("darkMode",mode)
+
+}
+
+if(localStorage.getItem("darkMode")==="true"){
+document.body.classList.add("dark")
 }
 
 /* TUTORIAL */
@@ -512,6 +629,7 @@ showPage("tutorial")
 
 slides=document.querySelectorAll(".slide")
 progress=document.getElementById("progress")
+
 index=0
 
 showSlide()
@@ -529,17 +647,21 @@ progress.style.width=percent+"%"
 }
 
 function nextSlide(){
+
 if(index<slides.length-1){
 index++
 showSlide()
 }
+
 }
 
 function prevSlide(){
+
 if(index>0){
 index--
 showSlide()
 }
+
 }
 
 function exitTutorial(){
@@ -550,3 +672,4 @@ showPage("home")
 
 </body>
 </html>
+```
