@@ -1,45 +1,76 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>TaskTrack - Student To-Do List</title>
+<title>TaskTrack</title>
 
 <style>
+
 body{
-font-family: Arial, sans-serif;
-background:#f4f6f9;
+font-family:Arial;
+background:#f0f3f8;
 margin:0;
-padding:0;
+text-align:center;
 }
 
-header{
-background:#4a6cf7;
-color:white;
-text-align:center;
-padding:20px;
+.page{
+display:none;
+padding-top:50px;
+}
+
+.active{
+display:block;
+}
+
+.header-img{
+width:400px;
+height:150px;
+background:white;
+margin:auto;
+border-radius:10px;
+overflow:hidden;
+}
+
+.header-img img{
+width:100%;
+height:100%;
+object-fit:cover;
 }
 
 .container{
-width:80%;
-margin:auto;
-margin-top:20px;
+margin-top:40px;
 }
 
-input{
-padding:10px;
-width:70%;
+.box{
+background:white;
+width:200px;
+margin:15px auto;
+padding:20px;
+border-radius:10px;
+box-shadow:0 3px 8px rgba(0,0,0,0.1);
 }
 
 button{
-padding:10px;
+padding:10px 20px;
 background:#4a6cf7;
-color:white;
 border:none;
+color:white;
 cursor:pointer;
+border-radius:5px;
 }
 
 button:hover{
 background:#324ed1;
+}
+
+.task-section{
+width:70%;
+margin:auto;
+margin-top:30px;
+}
+
+input{
+padding:10px;
+width:60%;
 }
 
 .task{
@@ -48,13 +79,20 @@ padding:10px;
 margin-top:10px;
 display:flex;
 justify-content:space-between;
-align-items:center;
 border-radius:5px;
 }
 
 .completed{
 text-decoration:line-through;
 color:gray;
+}
+
+.delete{
+background:red;
+}
+
+.edit{
+background:orange;
 }
 
 .report{
@@ -64,73 +102,184 @@ margin-top:20px;
 border-radius:5px;
 }
 
-.delete{
-background:red;
-margin-left:5px;
-}
-
-.edit{
-background:orange;
-margin-left:5px;
-}
 </style>
-
 </head>
 
 <body>
 
-<header>
-<h1>TaskTrack</h1>
-<p>Student Task Management System</p>
-</header>
+<!-- FRONT PAGE -->
+
+<div id="home" class="page active">
+
+<div class="header-img">
+<img src="https://picsum.photos/600/200">
+</div>
 
 <div class="container">
 
-<input type="text" id="taskInput" placeholder="Enter new task">
-<button onclick="addTask()">Add Task</button>
+<div class="box">
+<button onclick="openMenu()">Open</button>
+</div>
 
-<div id="taskList"></div>
+<div class="box">
+<button onclick="showPage('tutorial')">Tutorial</button>
+</div>
+
+</div>
+
+</div>
+
+
+<!-- MENU PAGE -->
+
+<div id="menu" class="page">
+
+<div class="header-img">
+<img src="https://picsum.photos/600/200">
+</div>
+
+<div class="container">
+
+<div class="box">
+<button onclick="showPage('addPage')">Add Task</button>
+</div>
+
+<div class="box">
+<button onclick="showPage('updatePage')">Update Task</button>
+</div>
+
+<div class="box">
+<button onclick="showPage('viewPage')">View Task</button>
+</div>
+
+<div class="box">
+<button onclick="showPage('home')">Back</button>
+</div>
+
+</div>
+
+</div>
+
+
+<!-- ADD TASK PAGE -->
+
+<div id="addPage" class="page">
+
+<h2>Add Task</h2>
+
+<div class="task-section">
+
+<input id="taskInput" placeholder="Enter task">
+<button onclick="addTask()">Add</button>
+
+</div>
+
+<button onclick="showPage('menu')">Back</button>
+
+</div>
+
+
+<!-- UPDATE TASK PAGE -->
+
+<div id="updatePage" class="page">
+
+<h2>Update Tasks</h2>
+
+<div id="updateList" class="task-section"></div>
+
+<button onclick="showPage('menu')">Back</button>
+
+</div>
+
+
+<!-- VIEW TASK PAGE -->
+
+<div id="viewPage" class="page">
+
+<h2>View Tasks</h2>
+
+<div id="taskList" class="task-section"></div>
 
 <div class="report">
-<h3>Task Report</h3>
+
 <p>Total Tasks: <span id="total">0</span></p>
-<p>Completed Tasks: <span id="completed">0</span></p>
-<p>Pending Tasks: <span id="pending">0</span></p>
-</div>
+<p>Completed: <span id="completed">0</span></p>
+<p>Pending: <span id="pending">0</span></p>
 
 </div>
+
+<button onclick="showPage('menu')">Back</button>
+
+</div>
+
+
+<!-- TUTORIAL PAGE -->
+
+<div id="tutorial" class="page">
+
+<h2>TaskTrack Tutorial</h2>
+
+<p>1. Click OPEN to access task tools.</p>
+<p>2. Use ADD TASK to create a new task.</p>
+<p>3. Use UPDATE TASK to edit or delete tasks.</p>
+<p>4. Use VIEW TASK to monitor completed and pending tasks.</p>
+
+<button onclick="showPage('home')">Back</button>
+
+</div>
+
 
 <script>
 
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
 function saveTasks(){
-localStorage.setItem("tasks", JSON.stringify(tasks));
+localStorage.setItem("tasks",JSON.stringify(tasks));
+}
+
+function showPage(page){
+
+document.querySelectorAll(".page").forEach(p=>{
+p.classList.remove("active");
+});
+
+document.getElementById(page).classList.add("active");
+
+displayTasks();
+displayUpdate();
+
+}
+
+function openMenu(){
+showPage("menu");
 }
 
 function addTask(){
 
-let input = document.getElementById("taskInput");
-let taskText = input.value;
+let input=document.getElementById("taskInput");
 
-if(taskText === "") return;
+if(input.value==="") return;
 
 tasks.push({
-text: taskText,
+text:input.value,
 done:false
 });
 
 input.value="";
 saveTasks();
-displayTasks();
+
+alert("Task Added!");
+
 }
 
 function displayTasks(){
 
-let taskList = document.getElementById("taskList");
-taskList.innerHTML="";
+let list=document.getElementById("taskList");
+if(!list) return;
 
-tasks.forEach((task,index)=>{
+list.innerHTML="";
+
+tasks.forEach((task,i)=>{
 
 let div=document.createElement("div");
 div.className="task";
@@ -143,32 +292,14 @@ text.classList.add("completed");
 }
 
 text.onclick=function(){
-toggleTask(index);
+tasks[i].done=!tasks[i].done;
+saveTasks();
+displayTasks();
 };
-
-let buttons=document.createElement("div");
-
-let editBtn=document.createElement("button");
-editBtn.innerText="Edit";
-editBtn.className="edit";
-editBtn.onclick=function(){
-editTask(index);
-};
-
-let deleteBtn=document.createElement("button");
-deleteBtn.innerText="Delete";
-deleteBtn.className="delete";
-deleteBtn.onclick=function(){
-deleteTask(index);
-};
-
-buttons.appendChild(editBtn);
-buttons.appendChild(deleteBtn);
 
 div.appendChild(text);
-div.appendChild(buttons);
 
-taskList.appendChild(div);
+list.appendChild(div);
 
 });
 
@@ -176,35 +307,64 @@ updateReport();
 
 }
 
-function toggleTask(index){
-tasks[index].done=!tasks[index].done;
+function displayUpdate(){
+
+let list=document.getElementById("updateList");
+if(!list) return;
+
+list.innerHTML="";
+
+tasks.forEach((task,i)=>{
+
+let div=document.createElement("div");
+div.className="task";
+
+let text=document.createElement("span");
+text.innerText=task.text;
+
+let edit=document.createElement("button");
+edit.innerText="Edit";
+edit.className="edit";
+
+edit.onclick=function(){
+
+let newTask=prompt("Edit task:",task.text);
+
+if(newTask){
+tasks[i].text=newTask;
 saveTasks();
-displayTasks();
+displayUpdate();
 }
 
-function deleteTask(index){
-tasks.splice(index,1);
+};
+
+let del=document.createElement("button");
+del.innerText="Delete";
+del.className="delete";
+
+del.onclick=function(){
+
+tasks.splice(i,1);
 saveTasks();
-displayTasks();
-}
+displayUpdate();
 
-function editTask(index){
+};
 
-let newTask = prompt("Edit your task:", tasks[index].text);
+div.appendChild(text);
+div.appendChild(edit);
+div.appendChild(del);
 
-if(newTask !== null){
-tasks[index].text = newTask;
-saveTasks();
-displayTasks();
-}
+list.appendChild(div);
+
+});
 
 }
 
 function updateReport(){
 
-let total = tasks.length;
-let completed = tasks.filter(task=>task.done).length;
-let pending = total - completed;
+let total=tasks.length;
+let completed=tasks.filter(t=>t.done).length;
+let pending=total-completed;
 
 document.getElementById("total").innerText=total;
 document.getElementById("completed").innerText=completed;
