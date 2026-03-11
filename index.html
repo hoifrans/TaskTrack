@@ -4,486 +4,229 @@
 <meta charset="UTF-8">
 <title>TaskTrack</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <style>
-
-*{
-box-sizing:border-box;
-margin:0;
-padding:0;
-}
-
-body{
-font-family:Segoe UI, sans-serif;
-background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
-color:white;
-min-height:100vh;
-}
-
-/* PAGE SYSTEM */
-
-.page{
-display:none;
-min-height:100vh;
-justify-content:center;
-align-items:center;
-flex-direction:column;
-}
-
-.page.active{
-display:flex;
-}
-
-/* FRONT PAGE */
-
-.front h1{
-font-size:60px;
-margin-bottom:20px;
-}
-
-.start-btn{
-padding:15px 40px;
-border:none;
-border-radius:10px;
-background:#7c3aed;
-color:white;
-font-size:18px;
-cursor:pointer;
-}
-
-/* DASHBOARD */
-
-.dashboard{
-width:90%;
-max-width:900px;
-}
-
-.stat-box{
-background:rgba(255,255,255,0.1);
-padding:20px;
-border-radius:12px;
-margin-bottom:20px;
-}
-
-.progress-bar{
-width:100%;
-height:10px;
-background:#333;
-border-radius:6px;
-margin-top:10px;
-}
-
-.progress-fill{
-height:100%;
-width:0%;
-background:#7c3aed;
-border-radius:6px;
-}
-
-.dashboard-buttons{
-display:flex;
-gap:10px;
-flex-wrap:wrap;
-}
-
-.dashboard button{
-padding:10px 25px;
-border:none;
-border-radius:8px;
-background:#7c3aed;
-color:white;
-cursor:pointer;
-}
-
-/* APP BOX */
-
-.app{
-width:90%;
-max-width:900px;
-background:rgba(255,255,255,0.08);
-padding:25px;
-border-radius:15px;
-}
-
-/* INPUT AREA */
-
-.input-area{
-display:flex;
-gap:10px;
-flex-wrap:wrap;
-margin-bottom:20px;
-}
-
-input,select{
-padding:10px;
-border:none;
-border-radius:6px;
-}
-
-button{
-padding:10px 15px;
-border:none;
-border-radius:6px;
-background:#7c3aed;
-color:white;
-cursor:pointer;
-}
-
-/* TASK TABLE */
-
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Segoe UI, sans-serif;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);color:white;min-height:100vh;}
+.page{display:none;min-height:100vh;justify-content:center;align-items:center;flex-direction:column;}
+.page.active{display:flex;}
+.front h1{font-size:60px;margin-bottom:20px;}
+.start-btn{padding:15px 40px;border:none;border-radius:10px;background:#7c3aed;color:white;font-size:18px;cursor:pointer;transition:.3s;}
+.start-btn:hover{transform:scale(1.05);background:#6d28d9;}
+.dashboard{width:90%;max-width:900px;}
+.stat-box{background:rgba(255,255,255,0.1);padding:20px;border-radius:12px;margin-bottom:20px;}
+.progress-bar{width:100%;height:10px;background:#333;border-radius:6px;margin-top:10px;}
+.progress-fill{height:100%;width:0%;background:#7c3aed;border-radius:6px;}
+.dashboard-buttons{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
+.dashboard button{padding:10px 25px;border:none;border-radius:8px;background:#7c3aed;color:white;cursor:pointer;transition:.3s;}
+.dashboard button:hover{transform:scale(1.05);background:#6d28d9;}
+.app{width:90%;max-width:900px;background:rgba(255,255,255,0.08);padding:25px;border-radius:15px;}
+.input-area{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
+input,select{padding:10px;border:none;border-radius:6px;}
+button{padding:8px 12px;border:none;border-radius:6px;background:#7c3aed;color:white;cursor:pointer;transition:.2s;}
+button:hover{transform:scale(1.05);box-shadow:0 4px 8px rgba(0,0,0,0.3);}
+button:active{transform:scale(0.95);}
 .task-header,
-.task-row{
-display:grid;
-grid-template-columns: 2fr 1fr 1fr 100px;
-padding:10px;
-align-items:center;
-}
-
-.task-header{
-font-weight:bold;
-border-bottom:2px solid rgba(255,255,255,0.2);
-margin-bottom:10px;
-}
-
-.task-row{
-background:rgba(255,255,255,0.1);
-margin-bottom:5px;
-border-radius:6px;
-}
-
-/* DELETE BUTTON */
-
-.delete-btn{
-background:#ff5252;
-}
-
+.task-row{display:grid;grid-template-columns:2fr 1fr 1fr 300px;padding:10px;align-items:center;}
+.task-header{font-weight:bold;border-bottom:2px solid rgba(255,255,255,0.2);margin-bottom:10px;}
+.task-row{background:rgba(255,255,255,0.1);margin-bottom:5px;border-radius:6px;}
+.completed{text-decoration:line-through;opacity:.6;}
+.actions button{margin-right:5px;cursor:pointer;}
+.delete-btn{background:#ff5252;}
+.complete-btn{background:#4caf50;}
+.update-btn{background:#ff9800;}
+.update-btn.disabled{background:#777;cursor:not-allowed;}
+.refresh-btn{background:#03a9f4;}
+.view-buttons{margin-top:15px;display:flex;gap:10px;}
+.view-buttons button{padding:10px 25px;border:none;border-radius:8px;background:#7c3aed;color:white;cursor:pointer;transition:.3s;}
+.view-buttons button:hover{transform:scale(1.05);background:#6d28d9;}
 </style>
 </head>
-
 <body>
 
 <!-- FRONT PAGE -->
-
 <div id="frontPage" class="page active front">
-
-<h1>TaskTrack</h1>
-<button class="start-btn" onclick="openDashboard()">Open</button>
-
+  <h1>TaskTrack</h1>
+  <button class="start-btn" onclick="openDashboard()">Open</button>
 </div>
 
 <!-- DASHBOARD -->
-
 <div id="dashboardPage" class="page">
-
-<div class="dashboard">
-
-<h2 style="margin-bottom:20px;">Task Dashboard</h2>
-
-<div class="stat-box">
-
-<p>Total: <span id="total">0</span></p>
-<p>Completed: <span id="completed">0</span></p>
-<p>Pending: <span id="pending">0</span></p>
-
-<div class="progress-bar">
-<div id="progressFill" class="progress-fill"></div>
-</div>
-
-</div>
-
-<div class="dashboard-buttons">
-<button onclick="openAdd()">Add Task</button>
-<button onclick="openView()">View Tasks</button>
-<button onclick="openUpdate()">Update Tasks</button>
-</div>
-
-</div>
-
+  <div class="dashboard">
+    <h2 style="margin-bottom:20px;">Task Dashboard</h2>
+    <div class="stat-box">
+      <p>Total: <span id="total">0</span></p>
+      <p>Completed: <span id="completed">0</span></p>
+      <p>Pending: <span id="pending">0</span></p>
+      <div class="progress-bar">
+        <div id="progressFill" class="progress-fill"></div>
+      </div>
+    </div>
+    <div class="dashboard-buttons">
+      <button onclick="openAdd()">Add Task</button>
+      <button onclick="openView()">View Tasks</button>
+    </div>
+  </div>
 </div>
 
 <!-- ADD TASK -->
-
 <div id="addPage" class="page">
-
-<div class="app">
-
-<h2>Add Task</h2>
-
-<div class="input-area">
-
-<input id="taskInput" placeholder="Enter task">
-
-<select id="priority">
-<option>Low</option>
-<option>Medium</option>
-<option>High</option>
-</select>
-
-<input type="date" id="dueDate">
-
-<button onclick="addTask()">Add</button>
-
-</div>
-
-<button onclick="openDashboard()">Back</button>
-
-</div>
-
+  <div class="app">
+    <h2>Add Task</h2>
+    <div class="input-area">
+      <input id="taskInput" placeholder="Enter task">
+      <select id="priority">
+        <option>Low</option>
+        <option>Medium</option>
+        <option>High</option>
+      </select>
+      <input type="date" id="dueDate">
+      <button onclick="addTask()">Add</button>
+    </div>
+    <button onclick="openDashboard()">Back</button>
+  </div>
 </div>
 
 <!-- VIEW TASK -->
-
 <div id="viewPage" class="page">
-
-<div class="app">
-
-<h2>View Tasks</h2>
-
-<div class="task-header">
-<div>Task Name</div>
-<div>Priority</div>
-<div>Date</div>
-<div>Action</div>
+  <div class="app">
+    <h2>View Tasks</h2>
+    <div class="task-header">
+      <div>Task Name</div>
+      <div>Priority</div>
+      <div>Date</div>
+      <div>Actions</div>
+    </div>
+    <div id="taskList"></div>
+    <div class="view-buttons">
+      <button onclick="refreshTasks()" class="refresh-btn">Refresh 🔄</button>
+      <button onclick="openDashboard()">Back</button>
+    </div>
+  </div>
 </div>
 
-<div id="taskList"></div>
-
-<button onclick="openDashboard()">Back</button>
-
-</div>
-
-</div>
-
-<!-- UPDATE TASK -->
-
-<div id="updatePage" class="page">
-
-<div class="app">
-
-<h2>Update Tasks</h2>
-
-<div id="updateList"></div>
-
-</div>
-
-</div>
-
-<!-- EDIT FORM -->
-
+<!-- EDIT TASK -->
 <div id="editPage" class="page">
-
-<div class="app">
-
-<h2>Edit Task</h2>
-
-<div class="input-area">
-
-<input id="editTask">
-
-<select id="editPriority">
-<option>Low</option>
-<option>Medium</option>
-<option>High</option>
-</select>
-
-<input type="date" id="editDate">
-
-<select id="editStatus">
-<option value="false">Pending</option>
-<option value="true">Completed</option>
-</select>
-
-<button onclick="updateTask()">Update</button>
-
-</div>
-
-<button onclick="openDashboard()">Cancel</button>
-
-</div>
-
+  <div class="app">
+    <h2>Update Task</h2>
+    <div class="input-area">
+      <input id="editTask">
+      <select id="editPriority">
+        <option>Low</option>
+        <option>Medium</option>
+        <option>High</option>
+      </select>
+      <input type="date" id="editDate">
+      <button onclick="updateTask()">Update</button>
+    </div>
+    <button onclick="openDashboard()">Cancel</button>
+  </div>
 </div>
 
 <script>
-
-/* STORAGE */
-
 let tasks = JSON.parse(localStorage.getItem("tasks")) || []
+let pendingActions = {} 
 let editIndex = null
 
-function saveTasks(){
-localStorage.setItem("tasks",JSON.stringify(tasks))
-}
-
-/* PAGE SYSTEM */
-
-function showPage(page){
-
-document.querySelectorAll(".page").forEach(p=>{
-p.classList.remove("active")
-})
-
-document.getElementById(page).classList.add("active")
-
-}
-
-/* NAVIGATION */
-
-function openDashboard(){
-showPage("dashboardPage")
-updateReport()
-}
-
-function openAdd(){
-showPage("addPage")
-}
-
-function openView(){
-showPage("viewPage")
-displayTasks()
-}
-
-function openUpdate(){
-showPage("updatePage")
-displayUpdate()
-}
-
-/* ADD TASK */
+function saveTasks(){ localStorage.setItem("tasks",JSON.stringify(tasks)) }
+function showPage(page){ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active")); document.getElementById(page).classList.add("active") }
+function openDashboard(){ showPage("dashboardPage"); updateReport() }
+function openAdd(){ showPage("addPage") }
+function openView(){ showPage("viewPage"); displayTasks() }
 
 function addTask(){
-
-let text=document.getElementById("taskInput").value
-let priority=document.getElementById("priority").value
-let date=document.getElementById("dueDate").value
-
-if(text==="") return
-
-tasks.push({
-text,
-priority,
-date,
-done:false
-})
-
-document.getElementById("taskInput").value=""
-
-saveTasks()
-alert("Task Added")
-
+  let text=document.getElementById("taskInput").value
+  let priority=document.getElementById("priority").value
+  let date=document.getElementById("dueDate").value
+  if(text==="") return
+  tasks.push({text,priority,date,done:false})
+  saveTasks()
+  alert("Task Added")
+  document.getElementById("taskInput").value=''
+  document.getElementById("dueDate").value=''
+  openDashboard()
 }
 
-/* VIEW TASKS */
-
+// Display tasks in view page
 function displayTasks(){
+  let list=document.getElementById("taskList")
+  list.innerHTML=""
+  tasks.forEach((task,index)=>{
+    let row=document.createElement("div")
+    row.className="task-row"
+    if(task.done) row.classList.add("completed")
 
-let list=document.getElementById("taskList")
-list.innerHTML=""
+    // Buttons
+    let completeBtn=`<button class="complete-btn" onclick="markComplete(${index})">Completed ✓</button>`
+    let deleteBtn=`<button class="delete-btn" onclick="markDelete(${index})">Delete 🗑</button>`
+    let updateBtn=`<button class="update-btn" onclick="editTask(${index})">Update</button>`
 
-tasks.forEach((task,index)=>{
+    // Hide buttons if Completed/Delete clicked
+    if(pendingActions[index]==="delete" || pendingActions[index]==="complete"){
+      completeBtn="" 
+      deleteBtn=""
+      updateBtn="" 
+    }
 
-let row=document.createElement("div")
-row.className="task-row"
+    // Disable update if task is already done
+    if(task.done) updateBtn=`<button class="update-btn disabled" disabled>Update</button>`
 
-row.innerHTML=`
-<div>${task.text}</div>
-<div>${task.priority}</div>
-<div>${task.date}</div>
-<div><button class="delete-btn" onclick="deleteTask(${index})">Delete 🗑</button></div>
-`
-
-list.appendChild(row)
-
-})
-
+    row.innerHTML=`
+      <div>${task.text}</div>
+      <div>${task.priority}</div>
+      <div>${task.date}</div>
+      <div class="actions">${completeBtn}${deleteBtn}${updateBtn}</div>
+    `
+    list.appendChild(row)
+  })
 }
 
-function deleteTask(i){
-tasks.splice(i,1)
-saveTasks()
-displayTasks()
-updateReport()
+function markDelete(i){ pendingActions[i]="delete"; displayTasks() }
+function markComplete(i){ pendingActions[i]="complete"; displayTasks() }
+
+function refreshTasks(){
+  Object.keys(pendingActions).forEach(i=>{
+    let action = pendingActions[i]
+    if(action==="delete") tasks.splice(i,1)
+    if(action==="complete") tasks[i].done=true
+  })
+  pendingActions={}
+  saveTasks()
+  displayTasks()
+  updateReport()
 }
-
-/* UPDATE PAGE */
-
-function displayUpdate(){
-
-let list=document.getElementById("updateList")
-list.innerHTML=""
-
-tasks.forEach((task,index)=>{
-
-let div=document.createElement("div")
-div.style.marginBottom="10px"
-
-div.innerHTML=`
-${task.text}
-<button onclick="editTask(${index})">Edit</button>
-`
-
-list.appendChild(div)
-
-})
-
-}
-
-/* EDIT TASK */
 
 function editTask(i){
-
-editIndex=i
-
-showPage("editPage")
-
-document.getElementById("editTask").value=tasks[i].text
-document.getElementById("editPriority").value=tasks[i].priority
-document.getElementById("editDate").value=tasks[i].date
-document.getElementById("editStatus").value=tasks[i].done
-
+  if(tasks[i].done) return; // cannot edit completed
+  editIndex=i
+  showPage("editPage")
+  document.getElementById("editTask").value=tasks[i].text
+  document.getElementById("editPriority").value=tasks[i].priority
+  document.getElementById("editDate").value=tasks[i].date
 }
-
-/* UPDATE TASK */
 
 function updateTask(){
-
-tasks[editIndex].text=document.getElementById("editTask").value
-tasks[editIndex].priority=document.getElementById("editPriority").value
-tasks[editIndex].date=document.getElementById("editDate").value
-tasks[editIndex].done=document.getElementById("editStatus").value==="true"
-
-saveTasks()
-
-alert("Task Updated")
-
-openDashboard()
-
+  tasks[editIndex].text=document.getElementById("editTask").value
+  tasks[editIndex].priority=document.getElementById("editPriority").value
+  tasks[editIndex].date=document.getElementById("editDate").value
+  saveTasks()
+  alert("Task Updated")
+  openView()
+  displayTasks()
+  updateReport()
 }
-
-/* REPORT */
 
 function updateReport(){
-
-let total=tasks.length
-let completed=tasks.filter(t=>t.done).length
-let pending=total-completed
-
-document.getElementById("total").innerText=total
-document.getElementById("completed").innerText=completed
-document.getElementById("pending").innerText=pending
-
-let percent=0
-
-if(total>0){
-percent=(completed/total)*100
+  let total=tasks.length
+  let completed=tasks.filter(t=>t.done).length
+  let pending=total-completed
+  document.getElementById("total").innerText=total
+  document.getElementById("completed").innerText=completed
+  document.getElementById("pending").innerText=pending
+  let percent=0
+  if(total>0) percent=(completed/total)*100
+  document.getElementById("progressFill").style.width=percent+"%"
 }
-
-document.getElementById("progressFill").style.width=percent+"%"
-
-}
-
-/* INIT */
-
 updateReport()
-
 </script>
 
 </body>
