@@ -1,257 +1,202 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-
+<meta charset="UTF-8">
 <title>TaskTrack</title>
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 
-/* MAIN THEME */
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+}
 
 body{
-margin:0;
-font-family:Trebuchet MS, sans-serif;
+font-family:Segoe UI, sans-serif;
+background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
 color:white;
-background:linear-gradient(135deg,#0b0014,#2b0040);
-text-align:center;
-}
-
-/* LIGHT MODE */
-
-body.light{
-background:#f0f3f8;
-color:black;
-}
-
-/* THEME TOGGLE */
-
-.theme-toggle{
-position:fixed;
-top:15px;
-right:20px;
-font-size:22px;
-cursor:pointer;
-z-index:1000;
-background:rgba(255,255,255,0.2);
-padding:8px 12px;
-border-radius:50px;
+min-height:100vh;
 }
 
 /* PAGE SYSTEM */
 
 .page{
 display:none;
-padding-top:60px;
+min-height:100vh;
+justify-content:center;
+align-items:center;
+flex-direction:column;
 }
 
-.active{
-display:block;
+.page.active{
+display:flex;
 }
 
-/* IMAGE HEADER */
+/* FRONT PAGE */
 
-.header-img{
-width:420px;
-height:160px;
-margin:auto;
-border-radius:10px;
-overflow:hidden;
-box-shadow:0 5px 15px rgba(0,0,0,0.4);
+.front h1{
+font-size:60px;
+margin-bottom:20px;
 }
 
-.header-img img{
-width:100%;
-height:100%;
-object-fit:cover;
-}
-
-/* BOX */
-
-.box{
-background:rgba(255,255,255,0.1);
-width:220px;
-margin:15px auto;
-padding:20px;
-border-radius:10px;
-backdrop-filter:blur(10px);
-}
-
-/* BUTTON */
-
-button{
-padding:10px 20px;
+.start-btn{
+padding:15px 40px;
 border:none;
+border-radius:10px;
+background:#7c3aed;
+color:white;
+font-size:18px;
+cursor:pointer;
+}
+
+/* DASHBOARD */
+
+.dashboard{
+width:90%;
+max-width:900px;
+}
+
+.stat-box{
+background:rgba(255,255,255,0.1);
+padding:20px;
+border-radius:12px;
+margin-bottom:20px;
+}
+
+.progress-bar{
+width:100%;
+height:10px;
+background:#333;
 border-radius:6px;
-background:#a855ff;
+margin-top:10px;
+}
+
+.progress-fill{
+height:100%;
+width:0%;
+background:#7c3aed;
+border-radius:6px;
+}
+
+.dashboard-buttons{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+}
+
+.dashboard button{
+padding:10px 25px;
+border:none;
+border-radius:8px;
+background:#7c3aed;
 color:white;
 cursor:pointer;
-font-weight:bold;
 }
 
-button:hover{
-background:#9333ea;
+/* APP BOX */
+
+.app{
+width:90%;
+max-width:900px;
+background:rgba(255,255,255,0.08);
+padding:25px;
+border-radius:15px;
 }
 
-/* TASK AREA */
+/* INPUT AREA */
 
-.task-section{
-width:70%;
-margin:auto;
-margin-top:30px;
-}
-
-input{
-padding:10px;
-width:60%;
-border-radius:5px;
-border:none;
-}
-
-.task{
-background:rgba(255,255,255,0.1);
-padding:10px;
-margin-top:10px;
+.input-area{
 display:flex;
-justify-content:space-between;
-align-items:center;
-border-radius:5px;
-}
-
-.completed{
-text-decoration:line-through;
-opacity:.6;
-}
-
-.delete{
-background:red;
-}
-
-.edit{
-background:orange;
-}
-
-/* REPORT */
-
-.report{
-background:rgba(255,255,255,0.1);
-padding:15px;
-margin-top:20px;
-border-radius:5px;
-}
-
-/* TUTORIAL */
-
-.slide{
-width:100vw;
-height:100vh;
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-position:absolute;
-opacity:0;
-transform:scale(.9);
-transition:.5s;
-}
-
-.slide.active{
-opacity:1;
-transform:scale(1);
-}
-
-/* SLIDE IMAGE */
-
-.slide img{
-width:220px;
+gap:10px;
+flex-wrap:wrap;
 margin-bottom:20px;
-border-radius:10px;
-box-shadow:0 5px 20px rgba(0,0,0,0.5);
 }
 
-.progress{
-position:fixed;
-top:0;
-left:0;
-height:5px;
-background:#a855ff;
-width:0%;
+input,select{
+padding:10px;
+border:none;
+border-radius:6px;
 }
 
-.nav{
-position:fixed;
-bottom:20px;
-width:100%;
-display:flex;
-justify-content:center;
-gap:20px;
+button{
+padding:10px 15px;
+border:none;
+border-radius:6px;
+background:#7c3aed;
+color:white;
+cursor:pointer;
 }
 
-/* RESPONSIVE */
+/* TASK TABLE */
 
-@media(max-width:768px){
-
-.header-img{
-width:90%;
+.task-header,
+.task-row{
+display:grid;
+grid-template-columns: 2fr 1fr 1fr 100px;
+padding:10px;
+align-items:center;
 }
 
-.task-section{
-width:90%;
+.task-header{
+font-weight:bold;
+border-bottom:2px solid rgba(255,255,255,0.2);
+margin-bottom:10px;
 }
 
+.task-row{
+background:rgba(255,255,255,0.1);
+margin-bottom:5px;
+border-radius:6px;
+}
+
+/* DELETE BUTTON */
+
+.delete-btn{
+background:#ff5252;
 }
 
 </style>
-
 </head>
 
 <body>
 
-<!-- THEME TOGGLE -->
+<!-- FRONT PAGE -->
 
-<div class="theme-toggle" onclick="toggleTheme()" id="themeIcon">
-🌙
-</div>
+<div id="frontPage" class="page active front">
 
-<!-- HOME -->
-
-<div id="home" class="page active">
-
-<div class="header-img">
-<img src="https://picsum.photos/800/300">
-</div>
-
-<div class="box">
-<button onclick="showPage('menu')">Open</button>
-</div>
-
-<div class="box">
-<button onclick="showTutorial()">Tutorial</button>
-</div>
+<h1>TaskTrack</h1>
+<button class="start-btn" onclick="openDashboard()">Open</button>
 
 </div>
 
-<!-- MENU -->
+<!-- DASHBOARD -->
 
-<div id="menu" class="page">
+<div id="dashboardPage" class="page">
 
-<h2>Task Menu</h2>
+<div class="dashboard">
 
-<div class="box">
-<button onclick="showPage('addPage')">Add Task</button>
+<h2 style="margin-bottom:20px;">Task Dashboard</h2>
+
+<div class="stat-box">
+
+<p>Total: <span id="total">0</span></p>
+<p>Completed: <span id="completed">0</span></p>
+<p>Pending: <span id="pending">0</span></p>
+
+<div class="progress-bar">
+<div id="progressFill" class="progress-fill"></div>
 </div>
 
-<div class="box">
-<button onclick="showPage('updatePage')">Update Task</button>
 </div>
 
-<div class="box">
-<button onclick="showPage('viewPage')">View Task</button>
+<div class="dashboard-buttons">
+<button onclick="openAdd()">Add Task</button>
+<button onclick="openView()">View Tasks</button>
+<button onclick="openUpdate()">Update Tasks</button>
 </div>
 
-<div class="box">
-<button onclick="showPage('home')">Back</button>
 </div>
 
 </div>
@@ -260,30 +205,29 @@ width:90%;
 
 <div id="addPage" class="page">
 
+<div class="app">
+
 <h2>Add Task</h2>
 
-<div class="task-section">
+<div class="input-area">
 
 <input id="taskInput" placeholder="Enter task">
+
+<select id="priority">
+<option>Low</option>
+<option>Medium</option>
+<option>High</option>
+</select>
+
+<input type="date" id="dueDate">
+
 <button onclick="addTask()">Add</button>
 
 </div>
 
-<br>
-<button onclick="showPage('menu')">Back</button>
+<button onclick="openDashboard()">Back</button>
 
 </div>
-
-<!-- UPDATE TASK -->
-
-<div id="updatePage" class="page">
-
-<h2>Update Tasks</h2>
-
-<div id="updateList" class="task-section"></div>
-
-<br>
-<button onclick="showPage('menu')">Back</button>
 
 </div>
 
@@ -291,83 +235,86 @@ width:90%;
 
 <div id="viewPage" class="page">
 
+<div class="app">
+
 <h2>View Tasks</h2>
 
-<input id="searchTask" placeholder="Search task..." onkeyup="searchTasks()">
+<div class="task-header">
+<div>Task Name</div>
+<div>Priority</div>
+<div>Date</div>
+<div>Action</div>
+</div>
 
-<div id="taskList" class="task-section"></div>
+<div id="taskList"></div>
 
-<div class="report">
-
-<p>Total Tasks: <span id="total">0</span></p>
-<p>Completed: <span id="completed">0</span></p>
-<p>Pending: <span id="pending">0</span></p>
+<button onclick="openDashboard()">Back</button>
 
 </div>
 
-<br>
+</div>
 
-<button onclick="saveTasksToFile()">Save Tasks</button>
+<!-- UPDATE TASK -->
 
-<br><br>
+<div id="updatePage" class="page">
 
-<button onclick="showPage('menu')">Back</button>
+<div class="app">
+
+<h2>Update Tasks</h2>
+
+<div id="updateList"></div>
 
 </div>
 
-<!-- TUTORIAL -->
-
-<div id="tutorial" class="page">
-
-<div class="progress" id="progress"></div>
-
-<div class="slide active">
-<img src="https://picsum.photos/200">
-<h1>Welcome to TaskTrack</h1>
-<p>This tutorial shows how to use the system.</p>
 </div>
 
-<div class="slide">
-<img src="https://picsum.photos/201">
-<h1>Step 1</h1>
-<p>Click OPEN to access the menu.</p>
+<!-- EDIT FORM -->
+
+<div id="editPage" class="page">
+
+<div class="app">
+
+<h2>Edit Task</h2>
+
+<div class="input-area">
+
+<input id="editTask">
+
+<select id="editPriority">
+<option>Low</option>
+<option>Medium</option>
+<option>High</option>
+</select>
+
+<input type="date" id="editDate">
+
+<select id="editStatus">
+<option value="false">Pending</option>
+<option value="true">Completed</option>
+</select>
+
+<button onclick="updateTask()">Update</button>
+
 </div>
 
-<div class="slide">
-<img src="https://picsum.photos/202">
-<h1>Step 2</h1>
-<p>Select ADD TASK to create tasks.</p>
-</div>
+<button onclick="openDashboard()">Cancel</button>
 
-<div class="slide">
-<img src="https://picsum.photos/203">
-<h1>Step 3</h1>
-<p>Use UPDATE TASK to edit or delete tasks.</p>
-</div>
-
-<div class="slide">
-<img src="https://picsum.photos/204">
-<h1>Step 4</h1>
-<p>View and monitor your tasks.</p>
-</div>
-
-<div class="slide">
-<img src="https://picsum.photos/205">
-<h1>End</h1>
-<p>You are ready to organize your tasks.</p>
-</div>
-
-<div class="nav">
-<button onclick="prevSlide()">Previous</button>
-<button onclick="nextSlide()">Next</button>
-<button onclick="exitTutorial()">Exit</button>
 </div>
 
 </div>
 
 <script>
 
-/* PAGE NAVIGATION */
+/* STORAGE */
+
+let tasks = JSON.parse(localStorage.getItem("tasks")) || []
+let editIndex = null
+
+function saveTasks(){
+localStorage.setItem("tasks",JSON.stringify(tasks))
+}
+
+/* PAGE SYSTEM */
 
 function showPage(page){
 
@@ -377,99 +324,83 @@ p.classList.remove("active")
 
 document.getElementById(page).classList.add("active")
 
-displayTasks()
-displayUpdate()
-
 }
 
-/* TASK STORAGE */
+/* NAVIGATION */
 
-let tasks = JSON.parse(localStorage.getItem("tasks")) || []
+function openDashboard(){
+showPage("dashboardPage")
+updateReport()
+}
 
-function saveTasks(){
-localStorage.setItem("tasks",JSON.stringify(tasks))
+function openAdd(){
+showPage("addPage")
+}
+
+function openView(){
+showPage("viewPage")
+displayTasks()
+}
+
+function openUpdate(){
+showPage("updatePage")
+displayUpdate()
 }
 
 /* ADD TASK */
 
 function addTask(){
 
-let input=document.getElementById("taskInput")
+let text=document.getElementById("taskInput").value
+let priority=document.getElementById("priority").value
+let date=document.getElementById("dueDate").value
 
-if(input.value==="") return
+if(text==="") return
 
-tasks.push({text:input.value,done:false})
+tasks.push({
+text,
+priority,
+date,
+done:false
+})
 
-input.value=""
+document.getElementById("taskInput").value=""
 
 saveTasks()
-
-alert("Task added!")
+alert("Task Added")
 
 }
 
-/* DISPLAY TASK */
+/* VIEW TASKS */
 
 function displayTasks(){
 
 let list=document.getElementById("taskList")
-if(!list) return
-
 list.innerHTML=""
 
-tasks.forEach((task,i)=>{
+tasks.forEach((task,index)=>{
 
-let div=document.createElement("div")
-div.className="task"
+let row=document.createElement("div")
+row.className="task-row"
 
-let text=document.createElement("span")
-text.innerText=task.text
+row.innerHTML=`
+<div>${task.text}</div>
+<div>${task.priority}</div>
+<div>${task.date}</div>
+<div><button class="delete-btn" onclick="deleteTask(${index})">Delete 🗑</button></div>
+`
 
-if(task.done) text.classList.add("completed")
+list.appendChild(row)
 
-text.onclick=function(){
+})
 
-tasks[i].done=!tasks[i].done
+}
+
+function deleteTask(i){
+tasks.splice(i,1)
 saveTasks()
 displayTasks()
-
-}
-
-div.appendChild(text)
-list.appendChild(div)
-
-})
-
 updateReport()
-
-}
-
-/* SEARCH */
-
-function searchTasks(){
-
-let keyword=document.getElementById("searchTask").value.toLowerCase()
-
-let list=document.getElementById("taskList")
-list.innerHTML=""
-
-tasks.forEach((task,i)=>{
-
-if(task.text.toLowerCase().includes(keyword)){
-
-let div=document.createElement("div")
-div.className="task"
-
-let text=document.createElement("span")
-text.innerText=task.text
-
-div.appendChild(text)
-list.appendChild(div)
-
-}
-
-})
-
 }
 
 /* UPDATE PAGE */
@@ -477,53 +408,53 @@ list.appendChild(div)
 function displayUpdate(){
 
 let list=document.getElementById("updateList")
-if(!list) return
-
 list.innerHTML=""
 
-tasks.forEach((task,i)=>{
+tasks.forEach((task,index)=>{
 
 let div=document.createElement("div")
-div.className="task"
+div.style.marginBottom="10px"
 
-let text=document.createElement("span")
-text.innerText=task.text
-
-let edit=document.createElement("button")
-edit.innerText="Edit"
-edit.className="edit"
-
-edit.onclick=function(){
-
-let newTask=prompt("Edit task:",task.text)
-
-if(newTask){
-tasks[i].text=newTask
-saveTasks()
-displayUpdate()
-}
-
-}
-
-let del=document.createElement("button")
-del.innerText="Delete"
-del.className="delete"
-
-del.onclick=function(){
-
-tasks.splice(i,1)
-saveTasks()
-displayUpdate()
-
-}
-
-div.appendChild(text)
-div.appendChild(edit)
-div.appendChild(del)
+div.innerHTML=`
+${task.text}
+<button onclick="editTask(${index})">Edit</button>
+`
 
 list.appendChild(div)
 
 })
+
+}
+
+/* EDIT TASK */
+
+function editTask(i){
+
+editIndex=i
+
+showPage("editPage")
+
+document.getElementById("editTask").value=tasks[i].text
+document.getElementById("editPriority").value=tasks[i].priority
+document.getElementById("editDate").value=tasks[i].date
+document.getElementById("editStatus").value=tasks[i].done
+
+}
+
+/* UPDATE TASK */
+
+function updateTask(){
+
+tasks[editIndex].text=document.getElementById("editTask").value
+tasks[editIndex].priority=document.getElementById("editPriority").value
+tasks[editIndex].date=document.getElementById("editDate").value
+tasks[editIndex].done=document.getElementById("editStatus").value==="true"
+
+saveTasks()
+
+alert("Task Updated")
+
+openDashboard()
 
 }
 
@@ -539,97 +470,21 @@ document.getElementById("total").innerText=total
 document.getElementById("completed").innerText=completed
 document.getElementById("pending").innerText=pending
 
+let percent=0
+
+if(total>0){
+percent=(completed/total)*100
 }
 
-/* EXPORT */
-
-function saveTasksToFile(){
-
-let content="TaskTrack Report\n\n"
-
-tasks.forEach((task,i)=>{
-
-let status=task.done?"Completed":"Pending"
-
-content+=(i+1)+". "+task.text+" - "+status+"\n"
-
-})
-
-let blob=new Blob([content])
-let link=document.createElement("a")
-
-link.href=URL.createObjectURL(blob)
-link.download="tasks.txt"
-
-link.click()
+document.getElementById("progressFill").style.width=percent+"%"
 
 }
 
-/* THEME TOGGLE */
+/* INIT */
 
-function toggleTheme(){
-
-document.body.classList.toggle("light")
-
-let icon=document.getElementById("themeIcon")
-
-if(document.body.classList.contains("light")){
-icon.innerHTML="☀️"
-}else{
-icon.innerHTML="🌙"
-}
-
-}
-
-/* TUTORIAL */
-
-let slides
-let progress
-let index=0
-
-function showTutorial(){
-
-showPage("tutorial")
-
-slides=document.querySelectorAll(".slide")
-progress=document.getElementById("progress")
-
-index=0
-
-showSlide()
-
-}
-
-function showSlide(){
-
-slides.forEach(s=>s.classList.remove("active"))
-slides[index].classList.add("active")
-
-let percent=(index/(slides.length-1))*100
-progress.style.width=percent+"%"
-
-}
-
-function nextSlide(){
-if(index<slides.length-1){
-index++
-showSlide()
-}
-}
-
-function prevSlide(){
-if(index>0){
-index--
-showSlide()
-}
-}
-
-function exitTutorial(){
-showPage("home")
-}
+updateReport()
 
 </script>
 
 </body>
 </html>
-
