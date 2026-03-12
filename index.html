@@ -36,6 +36,7 @@ button:active{transform:scale(0.95);}
 .update-btn{background:#ff9800;}
 .update-btn.disabled{background:#777;cursor:not-allowed;}
 .refresh-btn{background:#03a9f4;}
+.save-btn{background:#22c55e;}
 .view-buttons{margin-top:15px;display:flex;gap:10px;}
 .view-buttons button{padding:10px 25px;border:none;border-radius:8px;background:#7c3aed;color:white;cursor:pointer;transition:.3s;}
 .view-buttons button:hover{transform:scale(1.05);background:#6d28d9;}
@@ -45,188 +46,296 @@ button:active{transform:scale(0.95);}
 
 <!-- FRONT PAGE -->
 <div id="frontPage" class="page active front">
-  <h1>TaskTrack</h1>
-  <button class="start-btn" onclick="openDashboard()">Open</button>
+<h1>TaskTrack</h1>
+<button class="start-btn" onclick="openDashboard()">Open</button>
 </div>
 
 <!-- DASHBOARD -->
 <div id="dashboardPage" class="page">
-  <div class="dashboard">
-    <h2 style="margin-bottom:20px;">Task Dashboard</h2>
-    <div class="stat-box">
-      <p>Total: <span id="total">0</span></p>
-      <p>Completed: <span id="completed">0</span></p>
-      <p>Pending: <span id="pending">0</span></p>
-      <div class="progress-bar">
-        <div id="progressFill" class="progress-fill"></div>
-      </div>
-    </div>
-    <div class="dashboard-buttons">
-      <button onclick="openAdd()">Add Task</button>
-      <button onclick="openView()">View Tasks</button>
-    </div>
-  </div>
+<div class="dashboard">
+<h2 style="margin-bottom:20px;">Task Dashboard</h2>
+<div class="stat-box">
+<p>Total: <span id="total">0</span></p>
+<p>Completed: <span id="completed">0</span></p>
+<p>Pending: <span id="pending">0</span></p>
+<div class="progress-bar">
+<div id="progressFill" class="progress-fill"></div>
+</div>
+</div>
+<div class="dashboard-buttons">
+<button onclick="openAdd()">Add Task</button>
+<button onclick="openView()">View Tasks</button>
+</div>
+</div>
 </div>
 
 <!-- ADD TASK -->
 <div id="addPage" class="page">
-  <div class="app">
-    <h2>Add Task</h2>
-    <div class="input-area">
-      <input id="taskInput" placeholder="Enter task">
-      <select id="priority">
-        <option>Low</option>
-        <option>Medium</option>
-        <option>High</option>
-      </select>
-      <input type="date" id="dueDate">
-      <button onclick="addTask()">Add</button>
-    </div>
-    <button onclick="openDashboard()">Back</button>
-  </div>
+<div class="app">
+<h2>Add Task</h2>
+<div class="input-area">
+<input id="taskInput" placeholder="Enter task">
+<select id="priority">
+<option>Low</option>
+<option>Medium</option>
+<option>High</option>
+</select>
+<input type="date" id="dueDate">
+<button onclick="addTask()">Add</button>
+</div>
+<button onclick="openDashboard()">Back</button>
+</div>
 </div>
 
 <!-- VIEW TASK -->
 <div id="viewPage" class="page">
-  <div class="app">
-    <h2>View Tasks</h2>
-    <div class="task-header">
-      <div>Task Name</div>
-      <div>Priority</div>
-      <div>Date</div>
-      <div>Actions</div>
-    </div>
-    <div id="taskList"></div>
-    <div class="view-buttons">
-      <button onclick="refreshTasks()" class="refresh-btn">Refresh 🔄</button>
-      <button onclick="openDashboard()">Back</button>
-    </div>
-  </div>
+<div class="app">
+<h2>View Tasks</h2>
+
+<div class="task-header">
+<div>Task Name</div>
+<div>Priority</div>
+<div>Date</div>
+<div>Actions</div>
+</div>
+
+<div id="taskList"></div>
+
+<div class="view-buttons">
+<button onclick="refreshTasks()" class="refresh-btn">Refresh 🔄</button>
+<button onclick="saveTasksToFile()" class="save-btn">Save Tasks 💾</button>
+<button onclick="openDashboard()">Back</button>
+</div>
+
+</div>
 </div>
 
 <!-- EDIT TASK -->
 <div id="editPage" class="page">
-  <div class="app">
-    <h2>Update Task</h2>
-    <div class="input-area">
-      <input id="editTask">
-      <select id="editPriority">
-        <option>Low</option>
-        <option>Medium</option>
-        <option>High</option>
-      </select>
-      <input type="date" id="editDate">
-      <button onclick="updateTask()">Update</button>
-    </div>
-    <button onclick="openDashboard()">Cancel</button>
-  </div>
+<div class="app">
+<h2>Update Task</h2>
+<div class="input-area">
+<input id="editTask">
+<select id="editPriority">
+<option>Low</option>
+<option>Medium</option>
+<option>High</option>
+</select>
+<input type="date" id="editDate">
+<button onclick="updateTask()">Update</button>
+</div>
+<button onclick="openDashboard()">Cancel</button>
+</div>
 </div>
 
 <script>
+
 let tasks = JSON.parse(localStorage.getItem("tasks")) || []
-let pendingActions = {} 
+let pendingActions = {}
 let editIndex = null
 
-function saveTasks(){ localStorage.setItem("tasks",JSON.stringify(tasks)) }
-function showPage(page){ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active")); document.getElementById(page).classList.add("active") }
-function openDashboard(){ showPage("dashboardPage"); updateReport() }
-function openAdd(){ showPage("addPage") }
-function openView(){ showPage("viewPage"); displayTasks() }
+function saveTasks(){
+localStorage.setItem("tasks",JSON.stringify(tasks))
+}
+
+function showPage(page){
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"))
+document.getElementById(page).classList.add("active")
+}
+
+function openDashboard(){
+showPage("dashboardPage")
+updateReport()
+}
+
+function openAdd(){
+showPage("addPage")
+}
+
+function openView(){
+showPage("viewPage")
+displayTasks()
+}
 
 function addTask(){
-  let text=document.getElementById("taskInput").value
-  let priority=document.getElementById("priority").value
-  let date=document.getElementById("dueDate").value
-  if(text==="") return
-  tasks.push({text,priority,date,done:false})
-  saveTasks()
-  alert("Task Added")
-  document.getElementById("taskInput").value=''
-  document.getElementById("dueDate").value=''
-  openDashboard()
+
+let text=document.getElementById("taskInput").value
+let priority=document.getElementById("priority").value
+let date=document.getElementById("dueDate").value
+
+if(text==="") return
+
+tasks.push({text,priority,date,done:false})
+
+saveTasks()
+
+alert("Task Added")
+
+document.getElementById("taskInput").value=''
+document.getElementById("dueDate").value=''
+
+openDashboard()
+
 }
 
-// Display tasks in view page
 function displayTasks(){
-  let list=document.getElementById("taskList")
-  list.innerHTML=""
-  tasks.forEach((task,index)=>{
-    let row=document.createElement("div")
-    row.className="task-row"
-    if(task.done) row.classList.add("completed")
 
-    // Buttons
-    let completeBtn=`<button class="complete-btn" onclick="markComplete(${index})">Completed ✓</button>`
-    let deleteBtn=`<button class="delete-btn" onclick="markDelete(${index})">Delete 🗑</button>`
-    let updateBtn=`<button class="update-btn" onclick="editTask(${index})">Update</button>`
+let list=document.getElementById("taskList")
 
-    // Hide buttons if Completed/Delete clicked
-    if(pendingActions[index]==="delete" || pendingActions[index]==="complete"){
-      completeBtn="" 
-      deleteBtn=""
-      updateBtn="" 
-    }
+list.innerHTML=""
 
-    // Disable update if task is already done
-    if(task.done) updateBtn=`<button class="update-btn disabled" disabled>Update</button>`
+tasks.forEach((task,index)=>{
 
-    row.innerHTML=`
-      <div>${task.text}</div>
-      <div>${task.priority}</div>
-      <div>${task.date}</div>
-      <div class="actions">${completeBtn}${deleteBtn}${updateBtn}</div>
-    `
-    list.appendChild(row)
-  })
+let row=document.createElement("div")
+
+row.className="task-row"
+
+if(task.done) row.classList.add("completed")
+
+let completeBtn=`<button class="complete-btn" onclick="markComplete(${index})">Completed ✓</button>`
+let deleteBtn=`<button class="delete-btn" onclick="markDelete(${index})">Delete 🗑</button>`
+let updateBtn=`<button class="update-btn" onclick="editTask(${index})">Update</button>`
+
+if(pendingActions[index]==="delete" || pendingActions[index]==="complete"){
+completeBtn=""
+deleteBtn=""
+updateBtn=""
 }
 
-function markDelete(i){ pendingActions[i]="delete"; displayTasks() }
-function markComplete(i){ pendingActions[i]="complete"; displayTasks() }
+if(task.done) updateBtn=`<button class="update-btn disabled" disabled>Update</button>`
+
+row.innerHTML=`
+<div>${task.text}</div>
+<div>${task.priority}</div>
+<div>${task.date}</div>
+<div class="actions">${completeBtn}${deleteBtn}${updateBtn}</div>
+`
+
+list.appendChild(row)
+
+})
+
+}
+
+function markDelete(i){
+pendingActions[i]="delete"
+displayTasks()
+}
+
+function markComplete(i){
+pendingActions[i]="complete"
+displayTasks()
+}
 
 function refreshTasks(){
-  Object.keys(pendingActions).forEach(i=>{
-    let action = pendingActions[i]
-    if(action==="delete") tasks.splice(i,1)
-    if(action==="complete") tasks[i].done=true
-  })
-  pendingActions={}
-  saveTasks()
-  displayTasks()
-  updateReport()
+
+Object.keys(pendingActions).forEach(i=>{
+
+let action=pendingActions[i]
+
+if(action==="delete") tasks.splice(i,1)
+
+if(action==="complete") tasks[i].done=true
+
+})
+
+pendingActions={}
+
+saveTasks()
+
+displayTasks()
+
+updateReport()
+
 }
 
 function editTask(i){
-  if(tasks[i].done) return; // cannot edit completed
-  editIndex=i
-  showPage("editPage")
-  document.getElementById("editTask").value=tasks[i].text
-  document.getElementById("editPriority").value=tasks[i].priority
-  document.getElementById("editDate").value=tasks[i].date
+
+if(tasks[i].done) return
+
+editIndex=i
+
+showPage("editPage")
+
+document.getElementById("editTask").value=tasks[i].text
+document.getElementById("editPriority").value=tasks[i].priority
+document.getElementById("editDate").value=tasks[i].date
+
 }
 
 function updateTask(){
-  tasks[editIndex].text=document.getElementById("editTask").value
-  tasks[editIndex].priority=document.getElementById("editPriority").value
-  tasks[editIndex].date=document.getElementById("editDate").value
-  saveTasks()
-  alert("Task Updated")
-  openView()
-  displayTasks()
-  updateReport()
+
+tasks[editIndex].text=document.getElementById("editTask").value
+tasks[editIndex].priority=document.getElementById("editPriority").value
+tasks[editIndex].date=document.getElementById("editDate").value
+
+saveTasks()
+
+alert("Task Updated")
+
+openView()
+
+displayTasks()
+
+updateReport()
+
 }
 
 function updateReport(){
-  let total=tasks.length
-  let completed=tasks.filter(t=>t.done).length
-  let pending=total-completed
-  document.getElementById("total").innerText=total
-  document.getElementById("completed").innerText=completed
-  document.getElementById("pending").innerText=pending
-  let percent=0
-  if(total>0) percent=(completed/total)*100
-  document.getElementById("progressFill").style.width=percent+"%"
+
+let total=tasks.length
+
+let completed=tasks.filter(t=>t.done).length
+
+let pending=total-completed
+
+document.getElementById("total").innerText=total
+document.getElementById("completed").innerText=completed
+document.getElementById("pending").innerText=pending
+
+let percent=0
+
+if(total>0) percent=(completed/total)*100
+
+document.getElementById("progressFill").style.width=percent+"%"
+
 }
+
+/* SAVE TASKS TO FILE */
+
+function saveTasksToFile(){
+
+if(tasks.length===0){
+alert("No tasks to save")
+return
+}
+
+let content="TASKTRACK TASK LIST\n\n"
+
+tasks.forEach((t,i)=>{
+
+content+=
+"Task "+(i+1)+": "+t.text+"\n"+
+"Priority: "+t.priority+"\n"+
+"Date: "+t.date+"\n"+
+"Status: "+(t.done?"Completed":"Pending")+"\n\n"
+
+})
+
+let blob=new Blob([content],{type:"text/plain"})
+
+let link=document.createElement("a")
+
+link.href=URL.createObjectURL(blob)
+
+link.download="TaskTrack_Tasks.txt"
+
+link.click()
+
+}
+
 updateReport()
+
 </script>
 
 </body>
